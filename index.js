@@ -1,3 +1,4 @@
+const pdfPrintedPageBreak = "survey_pdf_break";
 function getPosition(el) {
   var res = 0;
   while (el) {
@@ -104,7 +105,7 @@ function createSurveyWithPrintedPages(
 
   printedSurvey.onAfterRenderSurvey.add(function(survey, options) {
     var rootElement = printedSurveyElement.parentElement;
-    var curElement = printedSurveyElement;
+    printedSurveyElement.className += " " + pdfPrintedPageBreak;
     setTimeout(function() {
       //debugger;
       while (
@@ -112,7 +113,6 @@ function createSurveyWithPrintedPages(
         printedSurveyElement.offsetHeight > height
       ) {
         var el = findElementOnBreak(printedSurveyElement, height);
-        printedSurveyElement.className += " printedStyle";
         if (!el) break;
         printedSurveyElement = doPageBreak(printedSurveyElement, el);
         /*
@@ -168,13 +168,14 @@ function saveSurveyToPdf(
   invisibleDiv.style.opacity = 0;
   setTimeout(function() {
     var elementsByPages = printedSurveyDiv.getElementsByClassName(
-      "printedStyle"
+      pdfPrintedPageBreak
     );
+    if (!elementsByPages || elementsByPages.length == 0) return;
     var currentElement = 0;
     var doc = new jsPDF();
     var margin = { left: 10, top: 10 };
     var options = { background: "#ffffff" };
-    var renderSurverToPdf = function() {
+    var renderSurveyToPdf = function() {
       doc.addHTML(
         elementsByPages[currentElement],
         margin.left,
@@ -184,7 +185,7 @@ function saveSurveyToPdf(
           if (currentElement < elementsByPages.length - 1) {
             currentElement++;
             doc.addPage();
-            renderSurverToPdf();
+            renderSurveyToPdf();
           } else {
             doc.save(fileName);
             document.body.removeChild(invisibleDiv);
@@ -192,6 +193,6 @@ function saveSurveyToPdf(
         }
       );
     };
-    renderSurverToPdf();
+    renderSurveyToPdf();
   }, 100);
 }
