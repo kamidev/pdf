@@ -172,9 +172,14 @@ function saveSurveyToPdf(
     );
     if (!elementsByPages || elementsByPages.length == 0) return;
     var currentElement = 0;
-    var doc = new jsPDF();
-    var margin = { left: 10, top: 10 };
-    var options = { background: "#ffffff" };
+    var doc = new jsPDF("p", "pt");
+    doc.internal.scaleFactor = 2.25;
+    var margin = { left: 0, top: 0 };
+    var options = {
+      pagesplit: false,
+      useOverflow: true,
+      background: "#ffffff"
+    };
     var renderSurveyToPdf = function() {
       doc.addHTML(
         elementsByPages[currentElement],
@@ -184,7 +189,7 @@ function saveSurveyToPdf(
         function() {
           if (currentElement < elementsByPages.length - 1) {
             currentElement++;
-            doc.addPage();
+            doc.addPage(width, height);
             renderSurveyToPdf();
           } else {
             doc.save(fileName);
