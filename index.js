@@ -143,13 +143,55 @@ function showPrintedSurvey(survey, el, width, height, renderSurveyFunction) {
   createSurveyWithPrintedPages(survey, el, width, height, renderSurveyFunction);
 }
 
+var formats = [
+  {
+    name: "letter",
+    width: 612,
+    height: 792
+  },
+  {
+    name: "a5",
+    width: 420,
+    height: 595
+  },
+  {
+    name: "a4",
+    width: 595,
+    height: 842
+  },
+  {
+    name: "a3",
+    width: 842,
+    height: 1191
+  }
+];
+
 function saveSurveyToPdf(
-  fileName,
+  fileNameOrOptions,
   survey,
   width,
   height,
-  renderSurveyFunction
+  renderSurveyFunction,
+  formatName
 ) {
+  var fileName = null;
+
+  if (typeof fileNameOrOptions === "string") {
+    fileName = fileNameOrOptions;
+  } else {
+    fileName = fileNameOrOptions.fileName;
+    survey = fileNameOrOptions.survey;
+    width = fileNameOrOptions.width;
+    height = fileNameOrOptions.height;
+    renderSurveyFunction = fileNameOrOptions.renderSurveyFunction;
+    formatName = fileNameOrOptions.formatName;
+  }
+
+  if (formatName) {
+    width = formats[formatName].width;
+    height = formats[formatName].height;
+  }
+
   var printedSurveyDiv = document.createElement("div");
   var invisibleDiv = document.createElement("div");
   invisibleDiv.appendChild(printedSurveyDiv);
